@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html dir="auto" lang="en">
+<head>
+    <script src="jquery/jquery-min-3.6.js"></script>
+    <script src="bootstrap/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <title>Jerusalem Concerts popup</title>
+    <script type="text/javascript" src="sortable.js"></script>
+    <script type="text/javascript" src="script.js"></script>
+</head>
+<body>
+    <div class="spinner-border" role="status" id="spinnerIcon">
+        <span class="sr-only">Loading...</span>
+    </div>
+    <table class="table" id="artists-table" hidden>
+        <thead>
+            <tr>
+                <th scope="col" id="table-index">#</th>
+                <th scope="col" id="table-artist">Artist</th>
+                <th scope="col" id="table-date">Date</th>
+                <th scope="col" id="table-location">Location</th>
+            </tr>
+        </thead>
+        <tbody id="artists-table-body">
+
+        </tbody>
+    </table>
+</body>
+</html>
