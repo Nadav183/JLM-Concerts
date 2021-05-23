@@ -4,7 +4,7 @@
   "version": "1",
 
   "browser_action": {
-    "default_popup": "index.html"
+    "default_popup": "popup.html"
   },
   "description": "aggregate all concerts in Jerusalem",
   "icons": {

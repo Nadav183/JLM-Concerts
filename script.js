@@ -32,11 +32,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 url_proxy = "https://qvrw15vfsi.execute-api.eu-central-1.amazonaws.com/getWebsiteDom?url="
 
+let count = 1;
 
-
-function getAllConcerts(){
-    let count = 1;
-    $.get(url_proxy + "https://yellowsubmarine.org.il/event", function(resp){
+function getYellow(url){
+    $.get(url_proxy + url, function(resp){
         let yellowDoc = new DOMParser().parseFromString(resp, "text/html");
         let artists = yellowDoc.getElementsByClassName("b-artist");
         for (let i=0; i<artists.length; i++){
@@ -81,85 +80,9 @@ function getAllConcerts(){
         document.getElementById('spinnerIcon').hidden=true;
         document.getElementById('artists-table').hidden=false;
     })
-    $.get(url_proxy + "https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/", function(resp){
-        let zappaDoc = new DOMParser().parseFromString(resp, "text/html");
-        let artists = zappaDoc.getElementsByClassName("event-listing-item");
-        for (let i=0; i<artists.length; i++){
-            let artistName = artists[i].getElementsByClassName("event-listing-city")[0].innerHTML;
-            let showDate = new Date(artists[i].getElementsByClassName("event-listing-date")[0].getAttribute('datetime'));
-            let tickets = "https://www.zappa-club.co.il/" + artists[i].getElementsByTagName('a')[0].getAttribute('href');
-            let showLocation = "Zappa JLM"
-
-            let tr = document.createElement("tr");
-            let thScope = document.createElement("th");
-            thScope.setAttribute("scope","row");
-            thScope.innerHTML = String(count);
-            let tdArtist = document.createElement("td")
-            tdArtist.innerHTML = artistName;
-            let tdShowDate = document.createElement("td");
-            tdShowDate.innerHTML = String(showDate.getUTCDate()) + "." + String(showDate.getUTCMonth() + 1);
-            let tdShowLocation = document.createElement("td");
-            tdShowLocation.innerHTML = showLocation;
-
-            let tdTickets = document.createElement("td");
-            let ticketsButton = document.createElement("a")
-            ticketsButton.className = "btn btn-primary btn-sm"
-            ticketsButton.href = tickets
-            ticketsButton.role = "button"
-            ticketsButton.innerHTML = "Get Tickets";
-            ticketsButton.target = "_blank"
-            tdTickets.appendChild(ticketsButton)
-
-            tr.appendChild(thScope);
-            tr.appendChild(tdArtist);
-            tr.appendChild(tdShowDate);
-            tr.appendChild(tdShowLocation);
-            tr.appendChild(tdTickets);
-
-            document.getElementById('artists-table-body').appendChild(tr);
-            count += 1;
-        }
-    })
-    $.get(url_proxy + "https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/?pnum=2", function(resp){
-        let zappaDoc = new DOMParser().parseFromString(resp, "text/html");
-        let artists = zappaDoc.getElementsByClassName("event-listing-item");
-        for (let i=0; i<artists.length; i++){
-            let artistName = artists[i].getElementsByClassName("event-listing-city")[0].innerHTML;
-            let showDate = new Date(artists[i].getElementsByClassName("event-listing-date")[0].getAttribute('datetime'));
-            let tickets = "https://www.zappa-club.co.il/" + artists[i].getElementsByTagName('a')[0].getAttribute('href');
-            let showLocation = "Zappa JLM"
-
-            let tr = document.createElement("tr");
-            let thScope = document.createElement("th");
-            thScope.setAttribute("scope","row");
-            thScope.innerHTML = String(count);
-            let tdArtist = document.createElement("td")
-            tdArtist.innerHTML = artistName;
-            let tdShowDate = document.createElement("td");
-            tdShowDate.innerHTML = String(showDate.getUTCDate()) + "." + String(showDate.getUTCMonth() + 1);
-            let tdShowLocation = document.createElement("td");
-            tdShowLocation.innerHTML = showLocation;
-
-            let tdTickets = document.createElement("td");
-            let ticketsButton = document.createElement("a")
-            ticketsButton.className = "btn btn-primary btn-sm"
-            ticketsButton.href = tickets
-            ticketsButton.role = "button"
-            ticketsButton.innerHTML = "Get Tickets";
-            ticketsButton.target = "_blank"
-            tdTickets.appendChild(ticketsButton)
-
-            tr.appendChild(thScope);
-            tr.appendChild(tdArtist);
-            tr.appendChild(tdShowDate);
-            tr.appendChild(tdShowLocation);
-            tr.appendChild(tdTickets);
-
-            document.getElementById('artists-table-body').appendChild(tr);
-            count += 1;
-        }
-    })
-    $.get(url_proxy + "https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/?pnum=3", function(resp){
+}
+function getZappaPage(url){
+    $.get(url_proxy + url, function(resp){
         let zappaDoc = new DOMParser().parseFromString(resp, "text/html");
         let artists = zappaDoc.getElementsByClassName("event-listing-item");
         for (let i=0; i<artists.length; i++){
@@ -187,7 +110,20 @@ function getAllConcerts(){
             ticketsButton.innerHTML = "Get Tickets";
             ticketsButton.target = "_blank"
 
-            tdTickets.appendChild(ticketsButton)
+            let availability = artists[i].getElementsByClassName('event-not-available')
+            availability = availability.length === 0;
+
+            if (availability){
+                tdTickets.appendChild(ticketsButton)
+            }
+            else {
+                ticketsButton.innerHTML = "Tickets Unavailable";
+                ticketsButton.className = "btn btn-primary btn-sm disabled";
+                ticketsButton.setAttribute("aria-disabled","true");
+                tdTickets.appendChild(ticketsButton);
+            }
+
+
 
             tr.appendChild(thScope);
             tr.appendChild(tdArtist);
@@ -199,48 +135,15 @@ function getAllConcerts(){
             count += 1;
         }
     })
-    $.get(url_proxy + "https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/?pnum=4", function(resp){
-        let zappaDoc = new DOMParser().parseFromString(resp, "text/html");
-        let artists = zappaDoc.getElementsByClassName("event-listing-item");
-        for (let i=0; i<artists.length; i++){
-            let artistName = artists[i].getElementsByClassName("event-listing-city")[0].innerHTML;
-            let showDate = new Date(artists[i].getElementsByClassName("event-listing-date")[0].getAttribute('datetime'));
-            let tickets = "https://www.zappa-club.co.il/" + artists[i].getElementsByTagName('a')[0].getAttribute('href');
-            let showLocation = "Zappa JLM"
+}
 
-            let tr = document.createElement("tr");
-            let thScope = document.createElement("th");
-            thScope.setAttribute("scope","row");
-            thScope.innerHTML = String(count);
-            let tdArtist = document.createElement("td")
-            tdArtist.innerHTML = artistName;
-            let tdShowDate = document.createElement("td");
-            tdShowDate.innerHTML = String(showDate.getUTCDate()) + "." + String(showDate.getUTCMonth() + 1);
-            let tdShowLocation = document.createElement("td");
-            tdShowLocation.innerHTML = showLocation;
+function getAllConcerts(){
+    getYellow("https://yellowsubmarine.org.il/event")
 
-            let tdTickets = document.createElement("td");
-            let ticketsButton = document.createElement("a")
-            ticketsButton.className = "btn btn-primary btn-sm"
-            ticketsButton.href = tickets
-            ticketsButton.role = "button"
-            ticketsButton.innerHTML = "Get Tickets";
-            ticketsButton.target = "_blank"
-            tdTickets.appendChild(ticketsButton)
-
-            tr.appendChild(thScope);
-            tr.appendChild(tdArtist);
-            tr.appendChild(tdShowDate);
-            tr.appendChild(tdShowLocation);
-            tr.appendChild(tdTickets);
-
-            document.getElementById('artists-table-body').appendChild(tr);
-            count += 1;
-        }
-        document.getElementById('spinnerIcon').hidden=true;
-        document.getElementById('artists-table').hidden=false;
-    })
-
+    getZappaPage("https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/")
+    getZappaPage("https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/?pnum=2")
+    getZappaPage("https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/?pnum=3")
+    getZappaPage("https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/?pnum=4")
 }
 
 getAllConcerts();
