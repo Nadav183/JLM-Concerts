@@ -136,14 +136,65 @@ function getZappaPage(url){
         }
     })
 }
+function getJLMTheater(url){
+    $.get(url_proxy + url, function(resp){
+        let doc = new DOMParser().parseFromString(resp, "text/html");
 
-function getAllConcerts(){
-    getYellow("https://yellowsubmarine.org.il/event")
+        let events = doc.getElementsByTagName('table')[0].getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        let tableBody = new DOMParser().parseFromString(doc.getElementsByTagName('table')[0].getElementsByTagName('tbody')[0].getElementsByTagName('template')[0].innerHTML, "text/html");
+        console.log(tableBody);
+        for (let i=0; i<events.length; i++){
+            let event=events[i];
+            let eventNameAndLink = event.getElementsByClassName('name')[0];
+            let eventName = eventNameAndLink.getElementsByTagName('a')[0].innerHTML;
+            let eventLink = eventNameAndLink.getElementsByTagName('a')[0].href;
+            let eventDate = event.getElementsByClassName('date')[0].getElementsByTagName('time')[0].getAttribute('datetime');
+            let eventLocation = "Jerusalem Theater";
 
-    getZappaPage("https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/")
-    getZappaPage("https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/?pnum=2")
-    getZappaPage("https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/?pnum=3")
-    getZappaPage("https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/?pnum=4")
+            let tr = document.createElement("tr");
+
+            let thScope = document.createElement("th");
+            thScope.setAttribute("scope","row");
+            thScope.innerHTML = String(count);
+
+            let tdArtist = document.createElement("td")
+            tdArtist.innerHTML = eventName;
+
+            let tdShowDate = document.createElement("td");
+            tdShowDate.innerHTML = String(eventDate);
+
+            let tdTickets = document.createElement("td");
+            let ticketsButton = document.createElement("a")
+            ticketsButton.className = "btn btn-primary btn-sm"
+            ticketsButton.href = eventLink
+            ticketsButton.role = "button"
+            ticketsButton.innerHTML = "Get Tickets";
+            ticketsButton.target = "_blank"
+            tdTickets.appendChild(ticketsButton)
+
+            let tdShowLocation = document.createElement("td");
+            tdShowLocation.innerHTML = eventLocation;
+
+            tr.appendChild(thScope);
+            tr.appendChild(tdArtist);
+            tr.appendChild(tdShowDate);
+            tr.appendChild(tdShowLocation);
+            tr.appendChild(tdTickets);
+
+            document.getElementById('artists-table-body').appendChild(tr);
+            count += 1;
+        }
+    })
+}
+
+async function getAllConcerts(){
+    await getYellow("https://yellowsubmarine.org.il/event")
+
+    await getZappaPage("https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/")
+    await getZappaPage("https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/?pnum=2")
+    await getZappaPage("https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/?pnum=3")
+    await getZappaPage("https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/?pnum=4")
+    //await getJLMTheater("https://www.jerusalem-theatre.co.il/%D7%9C%D7%95%D7%97_%D7%90%D7%99%D7%A8%D7%95%D7%A2%D7%99%D7%9D")
 }
 
 function dateCompare(x,y){
@@ -283,9 +334,11 @@ function sortTable(n,dataType) {
 }
 
 async function renderWebPage(){
-    await getAllConcerts();
-    document.getElementById('spinnerIcon').hidden=true;
-    document.getElementById('main-website').hidden=false;
+    await getAllConcerts().then(function() {
+        document.getElementById('spinnerIcon').hidden=true;
+        document.getElementById('main-website').hidden=false;
+    });
+
 }
 
 function filterLocation(loc){
