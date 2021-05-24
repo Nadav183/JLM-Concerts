@@ -77,8 +77,8 @@ function getYellow(url){
             document.getElementById('artists-table-body').appendChild(tr);
             count += 1;
         }
-        document.getElementById('spinnerIcon').hidden=true;
-        document.getElementById('artists-table').hidden=false;
+
+
     })
 }
 function getZappaPage(url){
@@ -145,8 +145,6 @@ function getAllConcerts(){
     getZappaPage("https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/?pnum=3")
     getZappaPage("https://www.zappa-club.co.il/city/%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-306/venue/%D7%96%D7%90%D7%A4%D7%94-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-25736/?pnum=4")
 }
-
-getAllConcerts();
 
 function dateCompare(x,y){
     let xSplit = x.split(".")
@@ -281,5 +279,22 @@ function sortTable(n,dataType) {
                 switching = true;
             }
         }
+    }
+}
+
+async function renderWebPage(){
+    await getAllConcerts();
+    document.getElementById('spinnerIcon').hidden=true;
+    document.getElementById('main-website').hidden=false;
+}
+
+function filterLocation(loc){
+    let table = document.getElementById('artists-table');
+    for (let i = 1; i<count; i++){
+        let row = table.rows[i];
+        if (row.getElementsByTagName('td')[2].innerHTML === loc){
+            row.hidden = !row.hidden;
+        }
+
     }
 }

@@ -8,24 +8,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jerusalem Concerts popup</title>
     <script type="text/javascript" src="script.js"></script>
+
 </head>
 <body>
-    <div class="spinner-border" role="status" id="spinnerIcon" style="margin-left:50%; margin-top:20%">
-        <span class="sr-only">Loading...</span>
+<div class="spinner-border" role="status" id="spinnerIcon" style="margin-left:50%; margin-top:20%">
+    <span class="sr-only">Loading...</span>
+</div>
+<div id="main-website" hidden>
+    <div class="container-fluid" id="filters">
+        <button type="button" class="btn btn-primary shadow-none active" data-toggle="button" aria-pressed="false" onclick="filterLocation('Zappa JLM')">Show Zappa</button>
+        <button type="button" class="btn btn-primary shadow-none active" data-toggle="button" aria-pressed="false" onclick="filterLocation('Yellow Submarine')">Show Yellow Submarine</button>
     </div>
-    <table class="table" id="artists-table" hidden>
+    <table class="table" id="artists-table">
         <thead>
-            <tr>
-                <th scope="col" id="table-index">#</th>
-                <th scope="col" id="table-artist">Artist</th>
-                <th scope="col" id="table-date">Date</th>
-                <th scope="col" id="table-location">Location</th>
-                <th scope="col" id = "table-tickets">Tickets</th>
-            </tr>
+        <tr>
+            <th scope="col" id="table-index">#</th>
+            <th scope="col" id="table-artist">Artist</th>
+            <th scope="col" id="table-date">Date</th>
+            <th scope="col" id="table-location">Location</th>
+            <th scope="col" id="table-tickets">Tickets</th>
+        </tr>
         </thead>
         <tbody id="artists-table-body">
-
         </tbody>
     </table>
+</div>
+<script> renderWebPage()</script>
 </body>
 </html>
